@@ -8,12 +8,28 @@
 #
 
 library(shiny)
+library(shinythemes)
+library(DT)
 
 shinyUI(
     navbarPage("Simple Analysis App",
+               theme=shinytheme("cerulean"),
                tabPanel("Dataset", sidebarLayout(
-                   sidebarPanel(),
-                   mainPanel()
+                   sidebarPanel(
+                       fileInput("Dataset_file", "Upload csv file",
+                                 accept=c(
+                                     "text/csv",
+                                     "test/comma-separated-values, text/plain",
+                                     ".csv")
+                                 ),
+                       uiOutput("Dataset_columns_ui"),
+                       p("Select all to view all columns")
+                   ),
+                   mainPanel(
+                       tabsetPanel(type="tabs",
+                                   tabPanel("Table", DT::dataTableOutput("Dataset_table"))
+                                   )
+                   )
                    )
                ),
                
