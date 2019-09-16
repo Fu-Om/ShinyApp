@@ -6,22 +6,29 @@ library(DT)
 shinyServer(function(input, output) {
     observeEvent(input$Dataset_file, {
       # Dataset server side
-      # Dataset reading
+      # Reading dataset 
       Dataset_csv_file <- reactive(read_csv(input$Dataset_file$datapath))
+      
       output$Dataset_columns_ui <- renderUI({
         selectizeInput("Dataset_columns", "Select columns", 
-                       choices=append(colnames(Dataset_csv_file()), "all"), multiple=TRUE)
+                       choices=append(colnames(Dataset_csv_file()), "all"), 
+                       multiple=TRUE)
       })
       
-      output$Dataset_table <- DT::renderDataTable({
-        if (req(input$Dataset_columns) == "all") {
+      Dataset_csv_file_selected <- reactive(
+        if ("all" %in% req(input$Dataset_columns)) {
           Dataset_csv_file()
         } else{
           Dataset_csv_file() %>% 
             dplyr::select(!!! rlang::syms(input$Dataset_columns))
         }
-      })
+      )
+      
+      output$Dataset_table <- DT::renderDataTable(Dataset_csv_file_selected())
+      
       # TableOne
+      
+      # NA check
       
       # Visualization server side
       
